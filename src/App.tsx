@@ -5,7 +5,7 @@ import Profile from "./routes/profile";
 import Login from "./routes/login";
 import CreateAccount from "./routes/create-account";
 import reset from "styled-reset";
-import { createGlobalStyle } from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
 import { useEffect, useState } from "react";
 import Loading from "./components/loading";
 
@@ -45,6 +45,12 @@ const GlobalStyles = createGlobalStyle`
     font-family: 'system-ui', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   }`;
 
+const Container = styled.div`
+  height: 100%;
+  display: flex;
+  justify-content: center;
+`;
+
 function App() {
   const [isLoading, setIsLoading] = useState(true);
 
@@ -57,10 +63,10 @@ function App() {
   }, []);
 
   return (
-    <>
+    <Container>
       <GlobalStyles />
       {isLoading ? <Loading /> : <RouterProvider router={router} />}
-    </>
+    </Container>
   );
 }
 
