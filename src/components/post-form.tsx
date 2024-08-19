@@ -1,5 +1,8 @@
 import { useState } from "react";
 import styled from "styled-components";
+import { auth, db } from "../firebase";
+import { serverTimestamp } from "firebase/database";
+import { addDoc, collection } from "firebase/firestore";
 
 const Form = styled.form`
   display: flex;
@@ -72,8 +75,29 @@ export default function PostForm() {
     }
   };
 
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const user = auth.currentUser;
+
+    if (!user || isLoading || content === "" || content.length > 180) return;
+
+    try {
+      setIsLoading(true);
+      await addDoc(collection(db, "posts"), {
+        content,
+        createdAt: serverTimestamp(),
+        username: user.displayName || "Anonymous",
+        userId: user.uid,
+      });
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <Form>
+    <Form onSubmit={onSubmit}>
       <TextArea
         rows={5}
         maxLength={180}
