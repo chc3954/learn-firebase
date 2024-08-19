@@ -8,11 +8,17 @@ import reset from "styled-reset";
 import styled, { createGlobalStyle } from "styled-components";
 import { useEffect, useState } from "react";
 import Loading from "./components/loading";
+import { auth } from "./firebase";
+import ProtectedRoute from "./components/protected-route";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />,
+    element: (
+      <ProtectedRoute>
+        <Layout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: "",
@@ -56,6 +62,7 @@ function App() {
 
   useEffect(() => {
     const init = async () => {
+      await auth.authStateReady();
       setIsLoading(false);
     };
 
