@@ -49,10 +49,8 @@ const DeleteButton = styled.button`
 export default function Post({ username, photo, content, userId, id }: IPost) {
   const user = auth.currentUser;
   const onDelete = async () => {
-    const confirm = window.confirm(
-      "Are you sure you want to delete this post?"
-    );
-    if (!confirm) return;
+    const ok = confirm("Are you sure you want to delete this post?");
+    if (!ok) return;
 
     if (user?.uid !== userId) return;
     try {
@@ -76,7 +74,7 @@ export default function Post({ username, photo, content, userId, id }: IPost) {
           <DeleteButton onClick={onDelete}>Delete</DeleteButton>
         )}
       </Column>
-      <Column>{photo && <Photo />}</Column>
+      <Column>{photo && <Photo src={photo} />}</Column>
     </Wrapper>
   );
 }
