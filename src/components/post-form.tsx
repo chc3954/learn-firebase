@@ -86,7 +86,7 @@ export default function PostForm() {
       setIsLoading(true);
       const doc = await addDoc(collection(db, "posts"), {
         content,
-        createdAt: serverTimestamp(),
+        createdAt: Date.now(),
         username: user.displayName || "Anonymous",
         userId: user.uid,
       });

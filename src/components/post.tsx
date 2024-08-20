@@ -9,7 +9,11 @@ const Wrapper = styled.div`
   border-radius: 15px;
 `;
 
-const Column = styled.div``;
+const Column = styled.div`
+  &:last-child {
+    place-self: end;
+  }
+`;
 
 const Username = styled.span`
   font-weight: 600;
@@ -33,8 +37,8 @@ export default function Post({ username, photo, content }: IPost) {
       <Column>
         <Username>{username}</Username>
         <Payload>{content}</Payload>
-        {photo && <Photo></Photo>}
       </Column>
+      <Column>{photo && <Photo />}</Column>
     </Wrapper>
   );
 }
