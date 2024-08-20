@@ -1,11 +1,22 @@
 import styled from "styled-components";
-import { auth, storage } from "../firebase";
-import { useState } from "react";
+import { auth, db, storage } from "../firebase";
+import { useEffect, useState } from "react";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { updateProfile } from "firebase/auth";
+import { Unsubscribe, updateProfile } from "firebase/auth";
 import { set } from "firebase/database";
+import {
+  collection,
+  getDocs,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
+import { IPost } from "../components/timeline";
+import Post from "../components/post";
 
-const Wrapper = styled.div`
+const Container = styled.div`
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -39,9 +50,17 @@ const Name = styled.span`
   font-size: 22px;
 `;
 
+const Posts = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 10px;
+`;
+
 export default function Profile() {
   const user = auth.currentUser;
   const [avatar, setAvatar] = useState(user?.photoURL);
+  const [posts, setPosts] = useState<IPost[]>([]);
 
   const onAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!user) return;
@@ -56,8 +75,43 @@ export default function Profile() {
     }
   };
 
+  useEffect(() => {
+    let unsubscribe: Unsubscribe | null = null;
+
+    const fetchPosts = async () => {
+      const postsQuery = query(
+        collection(db, "posts"),
+        where("userId", "==", user?.uid),
+        orderBy("createdAt", "desc"),
+        limit(10)
+      );
+
+      unsubscribe = await onSnapshot(postsQuery, (snapshot) => {
+        const data = snapshot.docs.map((doc) => {
+          const { content, createdAt, userId, username, photo } = doc.data();
+          return {
+            id: doc.id,
+            content,
+            createdAt,
+            userId,
+            username,
+            photo,
+          };
+        });
+
+        setPosts(data);
+      });
+    };
+
+    fetchPosts();
+
+    return () => {
+      unsubscribe && unsubscribe();
+    };
+  }, []);
+
   return (
-    <Wrapper>
+    <Container>
       <AvatarUpload htmlFor="avatar">
         {avatar ? (
           <AvatarImage src={avatar} />
@@ -79,6 +133,11 @@ export default function Profile() {
         onChange={onAvatarChange}
       />
       <Name>{user?.displayName ?? "Anonymouse"}</Name>
-    </Wrapper>
+      <Posts>
+        {posts.map((post) => (
+          <Post key={post.id} {...post} />
+        ))}
+      </Posts>
+    </Container>
   );
 }
