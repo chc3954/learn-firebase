@@ -96,6 +96,8 @@ export default function PostForm() {
         const url = await getDownloadURL(res.ref);
         await updateDoc(doc, { photo: url });
       }
+      setContent("");
+      setPhoto(null);
     } catch (e) {
       console.error(e);
     } finally {
