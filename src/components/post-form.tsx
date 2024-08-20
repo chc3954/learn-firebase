@@ -1,8 +1,9 @@
 import { useState } from "react";
 import styled from "styled-components";
-import { auth, db } from "../firebase";
+import { auth, db, storage } from "../firebase";
 import { serverTimestamp } from "firebase/database";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, updateDoc } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 const Form = styled.form`
   display: flex;
@@ -83,12 +84,18 @@ export default function PostForm() {
 
     try {
       setIsLoading(true);
-      await addDoc(collection(db, "posts"), {
+      const doc = await addDoc(collection(db, "posts"), {
         content,
         createdAt: serverTimestamp(),
         username: user.displayName || "Anonymous",
         userId: user.uid,
       });
+      if (photo) {
+        const locationRef = ref(storage, `posts/${user.uid}/${doc.id}`);
+        const res = await uploadBytes(locationRef, photo);
+        const url = await getDownloadURL(res.ref);
+        await updateDoc(doc, { photo: url });
+      }
     } catch (e) {
       console.error(e);
     } finally {
