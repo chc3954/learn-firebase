@@ -65,6 +65,7 @@ export default function Profile() {
   const onAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!user) return;
 
+    // Upload the selected file to Firebase Storage and update the user's profile
     const file = e.target.files?.[0];
     if (file) {
       const locationRef = ref(storage, `avatars/${user.uid}`);
@@ -78,6 +79,7 @@ export default function Profile() {
   useEffect(() => {
     let unsubscribe: Unsubscribe | null = null;
 
+    // Fetch the latest 10 posts from Firestore for the current user
     const fetchPosts = async () => {
       const postsQuery = query(
         collection(db, "posts"),
@@ -86,6 +88,7 @@ export default function Profile() {
         limit(10)
       );
 
+      // Listen to the latest 10 posts
       unsubscribe = await onSnapshot(postsQuery, (snapshot) => {
         const data = snapshot.docs.map((doc) => {
           const { content, createdAt, userId, username, photo } = doc.data();
@@ -105,6 +108,7 @@ export default function Profile() {
 
     fetchPosts();
 
+    // Unsubscribe from the snapshot listener when the component is unmounted
     return () => {
       unsubscribe && unsubscribe();
     };

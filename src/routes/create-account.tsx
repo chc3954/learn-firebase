@@ -41,12 +41,14 @@ export default function CreateAccount() {
 
     try {
       setIsLoading(true);
+      // Create a new user with email and password
       const credentials = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
 
+      // Update the user's profile
       await updateProfile(credentials.user, { displayName: name });
       navigate("/");
     } catch (e) {

@@ -54,7 +54,9 @@ export default function Post({ username, photo, content, userId, id }: IPost) {
 
     if (user?.uid !== userId) return;
     try {
+      // Delete a post from Firestore
       await deleteDoc(doc(db, "posts", id));
+      // Delete a photo as well from Firebase Storage
       if (photo) {
         const photoRef = ref(storage, `posts/${user.uid}/${id}`);
         await deleteObject(photoRef);

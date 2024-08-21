@@ -15,6 +15,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: (
+      // Wrap the layout in a ProtectedRoute component to protect it from unauthorized access
       <ProtectedRoute>
         <Layout />
       </ProtectedRoute>
@@ -62,6 +63,7 @@ function App() {
 
   useEffect(() => {
     const init = async () => {
+      // Wait for Firebase Auth to initialize
       await auth.authStateReady();
       setIsLoading(false);
     };

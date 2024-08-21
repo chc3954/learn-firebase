@@ -1,6 +1,5 @@
 import {
   collection,
-  getDocs,
   limit,
   onSnapshot,
   orderBy,
@@ -34,12 +33,14 @@ export default function Timeline() {
   useEffect(() => {
     let unsubscribe: Unsubscribe | null = null;
     const fetchPosts = async () => {
+      // Query the latest 10 posts from Firestore
       const postsQuery = query(
         collection(db, "posts"),
         orderBy("createdAt", "desc"),
         limit(10)
       );
 
+      // Listen to the latest 10 posts
       unsubscribe = await onSnapshot(postsQuery, (snapshot) => {
         const data = snapshot.docs.map((doc) => {
           const { content, createdAt, userId, username, photo } = doc.data();
@@ -59,6 +60,7 @@ export default function Timeline() {
 
     fetchPosts();
 
+    // Unsubscribe from the snapshot listener when the component is unmounted
     return () => {
       unsubscribe && unsubscribe();
     };

@@ -84,18 +84,21 @@ export default function PostForm() {
 
     try {
       setIsLoading(true);
+      // Add a new post to Firestore
       const doc = await addDoc(collection(db, "posts"), {
         content,
         createdAt: Date.now(),
         username: user.displayName || "Anonymous",
         userId: user.uid,
       });
+      // Upload photo to Firebase Storage if a photo is attached
       if (photo) {
         const locationRef = ref(storage, `posts/${user.uid}/${doc.id}`);
         const res = await uploadBytes(locationRef, photo);
         const url = await getDownloadURL(res.ref);
         await updateDoc(doc, { photo: url });
       }
+      // Reset the form after posting
       setContent("");
       setPhoto(null);
     } catch (e) {

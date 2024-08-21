@@ -28,9 +28,10 @@ export default function GithubButton() {
 
   const onClick = async () => {
     try {
+      // GitHub provider to sign in with GitHub
       const provider = new GithubAuthProvider();
       await signInWithRedirect(auth, provider);
-      navigate("/");
+      navigate("/"); // Redirect to home page after sign in
     } catch (e) {
       if (e instanceof FirebaseError) {
         console.log(e.message);

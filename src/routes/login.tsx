@@ -38,6 +38,7 @@ export default function Login() {
 
     try {
       setIsLoading(true);
+      // Sign in with email and password
       await signInWithEmailAndPassword(auth, email, password);
       navigate("/");
     } catch (e) {
